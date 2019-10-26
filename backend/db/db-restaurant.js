@@ -31,12 +31,12 @@ module.exports = {
     return await db.get('SELECT * FROM orders WHERE id = ?', orderId)
   },
   
-  updateFood: async ({name, price, status, desc, category, fid, uid}) => {
-    const t = await db.run(`
-      UPDATE foods SET name = ?, price = ?, status = ?, desc = ?, category = ?
+  updateFood: async ({name, price, status, desc, category, fid, uid, img}) => {
+    const f = await db.run(`
+      UPDATE foods SET name = ?, price = ?, status = ?, desc = ?, category = ?, img = ?
       WHERE id = ? AND rid = ?`,
-      name, price, status, desc, category, fid, uid)
-    return t.lastID
+      name, price, status, desc, category, img, fid, uid)
+    return f.lastID
   },
 
   createDesk: async({uid, name, capacity}) => {
@@ -44,8 +44,10 @@ module.exports = {
     return d.lastID
   },
 
-  createFood: async ({uid, name, price, status}) => {
-    return await db.run(`INSERT INTO foods (rid, name, price, status) VALUES (?, ?, ?, ?)`, uid, name, price, status)
+  createFood: async ({uid, name, desc, price, category, status = 'on', img = 'default.png'}) => {
+    const f =  await db.run(`INSERT INTO foods (rid, name, desc, price, category, status, img) VALUES (?, ?, ?, ?, ?, ?, ?)`, 
+      uid, name, desc, price, category, status, img)
+    return f.lastID
   },
 
   placeOrder: async ({rid, did, deskName, totalPrice, customCount, details, status, timestamp}) => {

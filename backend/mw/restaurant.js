@@ -1,7 +1,21 @@
+const path = require('path')
 const express = require('express')
 const db = require('../db/db-restaurant')
+const multer  = require('multer')
 
 const app = express.Router()
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './upload/')
+  },
+  filename: function (req, file, cb) {
+    console.log(file)
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+})
+const uploader = multer({storage})
+
 
 const deskStatus = {
   PENDING: 'PENDING',    // 未下单, 正在点餐
@@ -23,8 +37,6 @@ app.get('/deskinfo', async (req, res ,next) => {
 // 请求 餐厅的所有菜单
 app.get('/menu/restaurant/:rid', async (req, res, next) => {
   const menu = await db.getAllMenu(req.params.rid)
-  console.log(1);
-  console.log(menu);
   if (menu) {
     res.json(menu)  
   } else {
@@ -65,15 +77,15 @@ app.route('/restaurant/:rid/food')
     res.json(foodList)
   })
   // 添加菜品
+  .post(uploader.single('img'))
   .post(async (req, res, next) => {
     const uid = req.cookies.uid 
-    const {name, price, status} = req.body
-    console.log(name, price, status);
-    const foodId = await db.createFood({uid, name, price, status})
+    const {name, desc, price, category, status} = req.body
+    const img = req.file && req.file.filename
+    const foodId = await db.createFood({uid, name, desc, price, category, status, img})
     const food = await db.findFoodById(foodId)
     return res.json(food)
   })
-  
 
 app.route('/restaurant/:rid/food/:fid')
   // 删除菜品
@@ -94,17 +106,17 @@ app.route('/restaurant/:rid/food/:fid')
     
   })
   // 修改菜品
+  .put(uploader.single('img'))
   .put(async (req, res, next) => {
     const {fid} = req.params
     const uid = req.cookies.uid
     const food = await db.findFoodById({fid, uid})
-    console.log(food);
     if (food) {
+      // TODO: 更新菜品图片后删除原图片, 如果是默认图片则不删除文件
       const {name, price, status, desc, category} = req.body
-      await db.updateFood({name, price : +price, status, desc, category, fid, uid}) // 修改菜品的信息
+      const img = req.body.img || (req.file && req.file.filename)
+      await db.updateFood({name, price : +price, status, desc, category, fid, uid, img}) // 修改菜品的信息
       const updatedFood = await db.findFoodById({fid, uid})
-      console.log('=====');
-      console.log(updatedFood);
       res.json(updatedFood)
     } else {
       res.status(403).json({
@@ -117,12 +129,12 @@ app.route('/restaurant/:rid/food/:fid')
 
 // 桌面管理
 app.route('/restaurant/:rid/desk')
-  // 获取所有菜品列表用于展示
+  // 获取所有桌面列表
   .get(async (req, res, next) => {
     const deskList = await db.getAllDesk(rid, uid)
     res.json(deskList)
   })
-  // 添加菜品
+  // 添加桌面
   .post(async (req, res, next) => {
     const {name, capacity} = req.body
     const uid = req.cookies.uid
@@ -133,6 +145,7 @@ app.route('/restaurant/:rid/desk')
 
 
 app.route('/restaurant/:rid/desk/:did')
+  // 删除桌面
   .delete(async (req, res, next) => {
     const {rid, did} = req.params
     const uid = req.cookies.uid
@@ -149,6 +162,7 @@ app.route('/restaurant/:rid/desk/:did')
     }
     
   })
+  // 修改桌面
   .put(async (req, res, next) => {
     const {did} = req.params
     const uid = req.cookies.uid

@@ -8,7 +8,7 @@ import './foodManage.css'
 
 /**
  * TODO: 按是否上架排序
- * TODO: 修改时防抖
+ * TODO: 修改时节流
  */
 
 function FoodItem({foodData}) {
@@ -25,21 +25,28 @@ function FoodItem({foodData}) {
       setFood(res.data)
     })
   }
+
   function change(e) {
     const foodProp = e.target.name
-    const newVal = e.target.value
+    const newVal = foodProp === 'img' ? e.target.files[0] : e.target.value
     setChangedFood({
       ...changedFood,
       [foodProp]: newVal,
     })
   }
+  
   function save() {
     // save 时对比 修改后的菜品信息是否和原来的一样
     if (isEqual(changedFood, food)) {
       console.log('未修改')
       setModify(false)
     } else {
-      api.put(`/restaurant/1/food/${food.id}`, {...changedFood})
+      const fd = new FormData()
+      for (const key in changedFood) {
+        fd.append(key, changedFood[key])
+      }
+      console.log(fd);
+      api.put(`/restaurant/1/food/${food.id}`, fd)
         .then((res) => {
           setModify(false)
           setFood(res.data)
@@ -69,7 +76,7 @@ function FoodItem({foodData}) {
           </div>
           <div>
             <span>图片: </span>
-            <input type="text" onChange={change} defaultValue={food.img} name="img"/>
+            <input type="file" onChange={change}  name="img"/>
           </div>
         </div>
       )
@@ -77,7 +84,7 @@ function FoodItem({foodData}) {
       return (
         <div>
           <div>
-            <img src="http://localhost:8888/upload/default.png" alt={food.name}></img>
+            <img src={`http://localhost:8888/upload/${food.img}`} alt={food.name}></img>
           </div>
           <div>
             <p>名称: {food.name}</p>
@@ -125,7 +132,7 @@ function FoodManage() {
   return (
     <div>
       <h2>FoodManage</h2>
-      <Link to="manage/add-food">添加菜品</Link>
+      <Link to="add-food">添加菜品</Link>
 
       <div>
         <Suspense fallback={<div>正在加载...</div>}>
