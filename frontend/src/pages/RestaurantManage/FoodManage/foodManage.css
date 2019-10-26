@@ -1,0 +1,13 @@
+.food-item {
+  display: flex;
+  flex-wrap: wrap;
+  border: 2px solid;
+}
+
+.food-item img {
+  height: 120px;
+}
+
+.food-item .control {
+  flex-basis: 100%;
+}
