@@ -5,13 +5,13 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 
 const userAccountMiddleware = require('./mw/user-account')
-// const restaurantMiddleware = require('./mw/restaurant')
+const restaurantMiddleware = require('./mw/restaurant')
 
 const port = 8888
 const app = express()
 
 ;(async() => {
-  const db = await require('./db-conn')
+  const db = await require('./db/db-conn')
   global.db = db
   app.listen(port, () => console.log(`app listening on ${port}`))
 })();
@@ -37,4 +37,4 @@ app.use(express.json())
 
 
 app.use('/api', userAccountMiddleware)
-// app.use('/api', restaurantMiddleware)
+app.use('/api', restaurantMiddleware)
