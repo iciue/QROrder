@@ -82,8 +82,8 @@ app.route('/restaurant/:rid/food')
     const uid = req.cookies.uid 
     const {name, desc, price, category, status} = req.body
     const img = req.file && req.file.filename
-    const foodId = await db.createFood({uid, name, desc, price, category, status, img})
-    const food = await db.findFoodById(foodId)
+    await db.createFood({uid, name, desc, price, category, status, img})
+    const food = await db.findNewestFood(uid)
     return res.json(food)
   })
 
@@ -131,29 +131,30 @@ app.route('/restaurant/:rid/food/:fid')
 app.route('/restaurant/:rid/desk')
   // 获取所有桌面列表
   .get(async (req, res, next) => {
-    const deskList = await db.getAllDesk(rid, uid)
+    const uid = req.cookies.uid
+    const deskList = await db.getAllDesk(uid)
     res.json(deskList)
   })
   // 添加桌面
   .post(async (req, res, next) => {
     const {name, capacity} = req.body
     const uid = req.cookies.uid
-    const newDesk = dn.createDesk(uid, name, capacity)
-    const desk = await db.getLatestDesk(uid)
-    res.json(json)
+    dn.createDesk({uid, name, capacity})
+    const desk = await db.findNewestDesk(uid)
+    res.json(desk)
   })
 
 
 app.route('/restaurant/:rid/desk/:did')
   // 删除桌面
   .delete(async (req, res, next) => {
-    const {rid, did} = req.params
+    const {did} = req.params
     const uid = req.cookies.uid
-    const desk = await db.findFoodById(did, uid)
+    const desk = await db.findDeskById({did, uid})
     if (desk) {
-      await db.deleteFood(did, uid)
-      delete desk.id // 删除 food 的 id
-      res.json(desk) // 返回删除的 food 信息(不带 id). 
+      await db.deleteDesk({uid, did})
+      delete desk.id // 删除 Desk 的 id
+      res.json(desk) // 返回删除的 Desk 信息(不带 id). 
     } else {
       res.status(403).json({
         code: -1,
@@ -166,9 +167,11 @@ app.route('/restaurant/:rid/desk/:did')
   .put(async (req, res, next) => {
     const {did} = req.params
     const uid = req.cookies.uid
-    const desk = await db.findDeskById(did, uid)
+    const desk = await db.findDeskById({did, uid})
     if (desk) {
-      const updatedDesk = await db.updateFood(did, uid, { name, price, status })  // 修改某菜品的名称,价格,或上架状态
+      const {name, capacity} = req.body
+      await db.updateDesk({uid, did, name, capacity})
+      const updatedDesk = await db.findDeskById({did, uid})
       res.json(updatedDesk)
     } else {
       res.status(403).json({
