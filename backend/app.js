@@ -1,19 +1,25 @@
-const path = require('path')
-
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const http = require('http')
+const {restaurant, desk} = require('./io-server')
 
 const userAccountMiddleware = require('./mw/user-account')
 const restaurantMiddleware = require('./mw/restaurant')
 
 const port = 8888
+
 const app = express()
+const server = http.createServer()
+server.on('request', app)
+
+restaurant.attach(server)
+desk.attach(server)
 
 ;(async() => {
   const db = await require('./db/db-conn')
   global.db = db
-  app.listen(port, () => console.log(`app listening on ${port}`))
+  server.listen(port, () => console.log(`app listening on ${port}`))
 })();
 
 app.use((req, res, next) => {

@@ -1,18 +1,6 @@
 module.exports = {
-  getDeskInfo: async(deskId) =>{
-    const desk = await db.get(`SELECT 
-    desks.id as did,
-    users.id as uid,
-    desks.name,users.title, capacity FROM desks JOIN users ON desks.rid = users.id 
-    WHERE desks.id=?`, deskId)
-    return desk
-  },
-
-  getDeskId: async({rid, did}) => {
-    console.log(rid, did);
-    const desk = await db.get(`SELECT id from desks WHERE rid=? AND name='${did}'`, rid)
-    console.log(desk)
-    return desk.id
+  getDeskInfo: async({rid, did}) => {
+    return await db.get(`SELECT * from desks WHERE rid=? AND name='${did}'`, rid)
   },
 
   getAllMenu: async (rid) => {
@@ -39,8 +27,16 @@ module.exports = {
     return await db.get('SELECT * FROM desks WHERE id = ? AND rid = ?', did, uid)
   },
 
+  findDeskByName: async({rid, deskName}) => {
+    return await db.get('SELECT * FROM desks WHERE rid = ? AND name = ?', rid, deskName)
+  },
+
   findNewestDesk: async(rid) => {
     return await db.get('select * from desks WHERE rid = ? order by id desc limit 1', rid)
+  },
+
+  findNewestOrder: async({rid, did}) => {
+    return await db.get('select * from orders WHERE rid = ? AND did = ? order by id desc limit 1', rid, did)
   },
 
   findNewestFood: async(rid) => {
@@ -78,10 +74,11 @@ module.exports = {
   },
 
   placeOrder: async ({rid, did, deskName, totalPrice, customCount, details, status, timestamp}) => {
+    console.log(rid, did, deskName, totalPrice, customCount, details, status, timestamp);
     const order = await db.run(`INSERT INTO orders 
-    (rid, did, deskName, totalPrice, customCount, details, status, timestamp) VALUES (?,?,?,?,?,?,?)`
+    (rid, did, deskName, totalPrice, customCount, details, status, timestamp) VALUES (?, ?,?,?,?,?,?,?)`
     ,rid, did, deskName, totalPrice, customCount, details, status, timestamp)
     
-    return order.lstId
+    return order
   }
 }

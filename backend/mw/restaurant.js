@@ -2,8 +2,55 @@ const path = require('path')
 const express = require('express')
 const db = require('../db/db-restaurant')
 const multer  = require('multer')
+const io  = require('../io-server')
 
 const app = express.Router()
+
+var deskCartMap = new Map()
+
+io.restaurant.on('connection', socket => {
+  console.log('restaurant client in')
+
+  const restaurant = socket.handshake.query.restaurant
+  socket.join(restaurant)
+})
+
+io.desk.on('connection', socket => {
+  console.log('desk client in')
+  const desk = socket.handshake.query.desk
+  if (!desk) {
+    console.log('no desk param');
+    socket.closed()
+    return
+  }
+  socket.join(desk)
+  console.log('desk client join ' + desk)
+  let cartFood = deskCartMap.get(desk)
+  if (!cartFood) {
+    cartFood = []
+    deskCartMap.set(desk, cartFood)
+  }
+  socket.emit('cart food', cartFood)  // 向加入 desk 的顾客发送购物车信息
+  socket.on('new food', info => {   // 顾客 A 点餐, 更新购物车信息并广播
+    const cartStatus = deskCartMap.get(info.desk)
+    const idx = cartStatus.findIndex(it => it.food.id === info.food.id)
+
+    if (idx >= 0) {
+      if (info.amount === 0) {
+        cartStatus.splice(idx, 1)
+      } else {
+        cartStatus[idx].amount = info.amount
+      }
+    } else {
+      cartStatus.push({
+        food: info.food,
+        amount: info.amount,
+      })
+    }
+
+    io.desk.in(desk).emit('new food', info)
+  })
+})
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -28,9 +75,7 @@ const deskStatus = {
 // desinfo?rid=5&did=8
 app.get('/deskinfo', async (req, res ,next) => {
   const {rid, did} = req.query
-  const deskId = await db.getDeskId({rid, did: did.toUpperCase()})
-  const desk = await db.getDeskInfo(deskId)
-  console.log(desk);
+  const desk = await db.getDeskInfo({rid, did: did.toUpperCase()})
   res.json(desk)
 })
 
@@ -52,19 +97,26 @@ app.get('/menu/restaurant/:rid', async (req, res, next) => {
  * excepted:{
  *  rid: 
  *  customCount: 
- *  foods: [{fid, amount}, {}, {}]
+ *  foods: [{fid, amount}, {...}, {...}]
  *  deskName:
  * }
  */
 app.post('/restaurant/:rid/desk/:did/order', async (req, res, next) => {
-  const {rid, did, } = req.params
-  const {deskName, customCount} = req.body
-  const details = JSON.stringify(req.body.foods)
-  const status = deskStatus.PENDING
+  const {rid} = req.params
+  const {deskName, customCount, totalPrice, status} = req.body
+  const details = JSON.stringify(req.body.details)
+  console.log(details);
   const timestamp = new Date().toISOString()
-
-  const orderId = await db.placeOrder({rid, did, deskName, customCount, details, status, timestamp}) // 创建订单
-  const order = await db.findOrderById(orderId)
+  const desk = await db.findDeskByName({rid, deskName: deskName.toUpperCase()})
+  console.log(desk);
+  let did
+  if (desk) did = desk.id
+  try {
+    await db.placeOrder({rid, did, deskName, totalPrice, customCount, details, status, timestamp}) // 创建订单
+  } catch (error) {
+    next(error)
+  }
+  const order = await db.findNewestOrder({rid, did})
   res.json(order) // 返回已下单的的数据
 })
 
