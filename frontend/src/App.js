@@ -5,11 +5,11 @@ import {
   Route,
 } from "react-router-dom";
 
-import HomePage from './pages/HomePage/index'
-import LandingPage from './pages/LandingPage/index';
-import FoodCart from './pages/FoodCart/index';
-import RestaurantManage from './pages/RestaurantManage/index';
-import Login from './pages/Login/index';
+import HomePage from './pages/HomePage/'
+import LandingPage from './pages/LandingPage/';
+import OrderPage from './pages/OrderPage/';
+import RestaurantManage from './pages/RestaurantManage/';
+import Login from './pages/Login/';
 
 /**
  * 路由:
@@ -31,7 +31,7 @@ function App() {
       <Switch>
         <Route path="/" exact component={HomePage}></Route>
         <Route path="/landing/r/:rid/d/:did" component={LandingPage} ></Route>
-        <Route path="/r/:rid/d/:did" component={FoodCart} ></Route>
+        <Route path="/r/:rid/d/:did/orderPage" component={OrderPage} ></Route>
         <Route path="/manage" component={RestaurantManage} ></Route>
         <Route path="/login" component={Login} ></Route>
       </Switch>
