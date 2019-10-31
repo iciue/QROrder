@@ -1,7 +1,8 @@
-import React, {Suspense, } from 'react'
+import React, {useEffect, useState } from 'react'
 import { Link, Switch, Route, useRouteMatch} from 'react-router-dom'
-import createFetcher from '../../utils/createFetcher'
 import api from '../../api'
+import Loading from '../../component/Loading'
+
 
 import OrderManage from './OrderManage/'
 import FoodManage from './FoodManage/'
@@ -14,14 +15,8 @@ import './style.css'
  * 餐厅管理系统, 页面打开是发送 get 请求获取餐厅信息
  */
 
-const fetcher = createFetcher( () => {
-  return api.get('/userinfo')
-})
 
-function RestaurantInfo () {
-  const info = fetcher.read().data
-  console.log(info);
-
+function RestaurantInfo ({info}) {
   return (
     <div>
       <h2>{info.title}</h2>
@@ -31,15 +26,27 @@ function RestaurantInfo () {
 
 function RestaurantManage() {
   const {path, url} = useRouteMatch()
-  console.log(path, url);
+  const [info, setInfo] = useState()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    api.get('/userinfo')
+      .then(res => {
+        console.log('get userinfo');
+        setInfo(res.data)
+        setLoading(false)
+      })
+    return () => {}
+  }, [])  
+  
   return (
     <div className='restaurant-manage'>
       <h2>餐厅管理系统</h2>
-      <Suspense fallback={<div>loading...</div>} >
-        <RestaurantInfo></RestaurantInfo>
+      <Loading loading={loading}>
+        <RestaurantInfo info={info} />
         <nav>
           <ul>
-            <li> <Link to={`${url}/order`} >订单管理</Link> </li>
+            <li> <Link to={{pathname: `${url}/order`, state: 1}} >订单管理</Link> </li>
             <li> <Link to={`${url}/food`} >菜品管理</Link> </li>
             <li> <Link to={`${url}/desk`} >桌面管理</Link> </li>
           </ul>
@@ -50,7 +57,7 @@ function RestaurantManage() {
             <Route path={`${path}/desk`} component={DeskManage} />
             <Route path={`${path}/add-food`} component={AddFood} />
         </Switch>
-      </Suspense>
+      </Loading>
     </div>
   )
 }

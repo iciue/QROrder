@@ -13,6 +13,7 @@ io.restaurant.on('connection', socket => {
 
   const restaurant = socket.handshake.query.restaurant
   socket.join(restaurant)
+  console.log('restaurant client in ' + restaurant);
 })
 
 io.desk.on('connection', socket => {
@@ -92,8 +93,9 @@ app.get('/menu/restaurant/:rid', async (req, res, next) => {
   }
 })
 
-// 用户下单
+
 /**
+ * 用户下单
  * excepted:{
  *  rid: 
  *  customCount: 
@@ -105,10 +107,8 @@ app.post('/restaurant/:rid/desk/:did/order', async (req, res, next) => {
   const {rid} = req.params
   const {deskName, customCount, totalPrice, status} = req.body
   const details = JSON.stringify(req.body.details)
-  console.log(details);
   const timestamp = new Date().toISOString()
   const desk = await db.findDeskByName({rid, deskName: deskName.toUpperCase()})
-  console.log(desk);
   let did
   if (desk) did = desk.id
   try {
@@ -118,6 +118,10 @@ app.post('/restaurant/:rid/desk/:did/order', async (req, res, next) => {
   }
   const order = await db.findNewestOrder({rid, did})
   res.json(order) // 返回已下单的的数据
+
+  deskCartMap.set(deskName, []) //清空当前桌已点菜数据
+  io.desk.in(deskName).emit('placeOrder success', order)  //通知其他顾客下单成功
+  io.restaurant.in(rid).emit('new order', order) //通知餐厅新订单
 })
 
 // 菜品管理
@@ -235,28 +239,30 @@ app.route('/restaurant/:rid/desk/:did')
 
 
 // 订单管理
-app.route('/restaurant/:rid/order/:oid')
+// /restaurant/1/order/${order.id}/status
+app.route('/restaurant/:rid/order')
+  // 获取所有订单
   .get(async (req, res, next) => {
     const uid = req.cookies.uid
-    const orders = await db.findOrdersById(uid, oid)
-    order.forEach(order => {
-      order.details = JSON.parse(order.details)
-    })
+    const orders = await db.getAllOrder(uid)
     res.json(orders)
   })
-  .delete(async (req,res, next) => {
-    const oid = req.params
-    const order = await db.findOrderById(uid, oid)
-    if (order) {
-      await db.deleteOrder
-      res.json(order)
-    } else {
-      res.status(401).json({
-        code: -1,
-        msg: '没有次订单或无权限操作次订单'
-      })
-    }
-  })
+
+app.put('/restaurant/:rid/order/:oid/status', async (req, res, next) => {
+  const {status} = req.body
+  const uid = req.cookies.uid
+  const {oid} = req.params
+  try {
+    await db.updateOrder({status, oid, uid})
+    res.json(order)
+  } catch (error) {
+    res.json({
+      code: -1,
+      msg: '服务器错误'
+    })
+  }
+}) 
+
 
 
 module.exports = app

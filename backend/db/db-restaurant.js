@@ -15,6 +15,10 @@ module.exports = {
     return await db.all('SELECT * FROM desks WHERE rid=?', rid)
   },
 
+  getAllOrder: async (rid) => {
+    return await db.all('SELECT * FROM orders WHERE rid=?', rid)
+  },
+
   findFoodById: async ({fid, uid}) => {
     return await db.get('SELECT * FROM foods WHERE id = ? AND rid = ?', fid, uid)
   },
@@ -54,6 +58,10 @@ module.exports = {
   updateDesk: async ({uid, did, name, capacity}) => {
     const d = await db.run(`UPDATE desks SET name = ?, capacity = ? WHERE id = ? AND rid = ?`, name, capacity, did, uid)
     return d.lastID
+  },
+
+  updateOrder: async ({oid, uid, status}) => {
+    return await db.run(`UPDATE orders SET status = ? WHERE id = ? AND rid = ?`, status, oid, uid)
   },
 
   createDesk: async({uid, name, capacity}) => {

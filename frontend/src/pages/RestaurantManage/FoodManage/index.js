@@ -128,7 +128,7 @@ function FoodList() {
 }
 
 function FoodManage() {
-
+  console.log('foodManage');
   return (
     <div>
       <h2>FoodManage</h2>

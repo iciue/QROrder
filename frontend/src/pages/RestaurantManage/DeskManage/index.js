@@ -102,7 +102,9 @@ function DeskManage() {
 
   return (
     <div>
-      <DeskList></DeskList>
+      <Suspense fallback={<div>loading...</div>}>
+        <DeskList></DeskList>
+      </Suspense>
     </div>
   )
 }
