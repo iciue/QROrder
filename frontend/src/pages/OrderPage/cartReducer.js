@@ -39,6 +39,12 @@ function cartReducer(state = initialState, action) {
         ...state,
         cartStatus: action.cartStatus
       }
+
+    case "placeOrderSuccess":
+      return {
+        ...state,
+        cartStatus: []
+      }
       
     default:
       return state;

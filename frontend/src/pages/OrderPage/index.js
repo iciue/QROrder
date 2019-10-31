@@ -1,4 +1,4 @@
-import React, {useState, Suspense, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import { useSelector, useDispatch, Provider } from "react-redux";
 import {useParams, useLocation} from 'react-router-dom'
 

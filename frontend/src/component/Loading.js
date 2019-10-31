@@ -5,6 +5,7 @@ function Loading(props) {
     <>
     {
       props.loading ? <div className="loader" >loading </div>  : props.children
+      // props.loading ? <div className="loader" >loading </div>  : <div>done</div>
     }
     </>
   )

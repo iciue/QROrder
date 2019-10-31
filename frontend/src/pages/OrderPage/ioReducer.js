@@ -36,6 +36,13 @@ function ioReducer(state = initialState, action) {
         })
       })
 
+      socket.on('placeOrder success', (order) => {
+        console.log('placeOrder success');
+        action.dispatch({
+          type: 'placeOrderSuccess',
+        })
+      })
+
       return {socket};
 
     case 'closeSocket':
