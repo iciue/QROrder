@@ -1,6 +1,7 @@
 const initialState = {
   menu: [],
   cartStatus: [],
+  totalPrice: 0,
 }
 
 
@@ -13,6 +14,7 @@ function cartReducer(state = initialState, action) {
       }
     
     case "updateFood":
+      console.log(action);
       let newCartStatus;
       const FoodIndex = state.cartStatus.findIndex(it => it.food.id === action.food.id)
       if (FoodIndex >= 0) {
@@ -20,7 +22,10 @@ function cartReducer(state = initialState, action) {
           newCartStatus = state.cartStatus.filter(it => it.food.id !== action.food.id)
         } else {
           newCartStatus = state.cartStatus.map(it => {
-            if (it.food.id === action.food.id) it.amount = action.amount
+            if (it.food.id === action.food.id) {
+              it.amount = action.amount
+              it.totalPrice = action.amount * action.food.price
+            }
             return it
           })
         }

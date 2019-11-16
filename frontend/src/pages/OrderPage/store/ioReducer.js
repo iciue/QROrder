@@ -28,11 +28,11 @@ function ioReducer(state = initialState, action) {
 
       socket.on('new food', (newFood) => {
         console.log('receive newest newFood from server');
-        console.log(newFood);
         action.dispatch({
           type: 'updateFood',
           food: newFood.food,
-          amount: newFood.amount
+          amount: newFood.amount,
+          totalPrice: newFood.amount * newFood.food.price
         })
       })
 
@@ -56,6 +56,7 @@ function ioReducer(state = initialState, action) {
         desk: action.desk,
         food: action.food,
         amount: action.amount,
+        totalPrice: action.totalPrice
       })
       return state
 
