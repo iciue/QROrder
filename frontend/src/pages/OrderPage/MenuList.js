@@ -11,33 +11,32 @@ const MenuList = () => {
   const categories = groupBy(menu, 'category')
   const categoriesNames = Object.keys(categories)
   const MenuRef = useRef()
-  window.ref = MenuRef
+  const isLock = useRef(false)
 
   const [categoryInfo, setCategoryInfo] = useState([])
-  const [selectedKeys, setSelectedKeys] = useState()
+  const [selectedKeys, setSelectedKeys] = useState('1')
 
   const scrollHandler = useCallback((e) => {
+    if (isLock.current) {
+      isLock.current = false;
+      return
+    }
     const pageY = MenuRef.current.scrollTop + 10
-    console.log(pageY);
-    const t = categoryInfo.find(it =>{
-      return pageY >= it.offsetTop
-    })
-    console.log(pageY, t);
-    t === undefined || t.dataset.category === selectedKeys || setSelectedKeys(t.dataset.category)
+    const target = categoryInfo.find(it => pageY >= it.offsetTop)
+    target && target.dataset.category === selectedKeys || setSelectedKeys(target.dataset.category)
   }, [categoryInfo])
 
   const scrollTo = (e) => {
     const t = categoryInfo.find(it => it.dataset.category === e.key)
     const d = t.offsetTop
+    isLock.current = true
     MenuRef.current.scrollTo(0, d)
     setSelectedKeys(e.key)
   }
   
   useEffect(() => {
     console.log(`didMount`);
-    setCategoryInfo(() => categoriesNames.map(name => {
-      return document.querySelector(`[data-category="${name}"]`)
-    }).reverse())
+    setCategoryInfo(() => categoriesNames.map(name => document.querySelector(`[data-category="${name}"]`)).reverse())
     return () => {console.log(`unMount`);}
   }, [])
 
@@ -64,6 +63,7 @@ const MenuList = () => {
         {
           categoriesNames.map((name, i) => (
             <div key={name} className = {name} data-category={name} >
+              <h4 className="title">{name}</h4>
               {categories[name].map(food => <MenuItem key={food.id} food={food}/>)}
             </div>
           ))
