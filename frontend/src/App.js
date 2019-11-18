@@ -11,6 +11,7 @@ import OrderPage from './pages/OrderPage/';
 import RestaurantManage from './pages/RestaurantManage/';
 import Login from './pages/Login/';
 
+
 /**
  * 路由:
  * 客户侧: 
@@ -33,7 +34,7 @@ function App() {
         <Route path="/landing/r/:rid/d/:did" component={LandingPage} ></Route>
         <Route path="/r/:rid/d/:did/orderPage" component={OrderPage} ></Route>
         <Route path="/manage" component={RestaurantManage} ></Route>
-        <Route path="/login" component={Login} ></Route>
+        <Route path="/login" component={Login}  ></Route>
       </Switch>
     </Router>
   );

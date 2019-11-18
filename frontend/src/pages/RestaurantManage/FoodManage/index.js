@@ -1,10 +1,12 @@
 import React, {Suspense, useState} from 'react';
-import { Link } from 'react-router-dom'
 import createFetcher from '../../../utils/createFetcher';
 import api from '../../../api';
 import { isEqual } from '../../../utils/helper'
+import './foodManage.less'
+import { Modal, Card, Button, Input, Tooltip  } from 'antd';
 
-import './foodManage.css'
+
+
 
 /**
  * TODO: 按是否上架排序
@@ -13,6 +15,7 @@ import './foodManage.css'
 
 function FoodItem({foodData}) {
   const [food, setFood] = useState(foodData)
+  const [isInteger, setIsInteger] = useState(false)
   const [isModify, setModify] = useState(false)
   const [changedFood, setChangedFood] = useState({...food})
 
@@ -54,36 +57,50 @@ function FoodItem({foodData}) {
     }
   }
 
+  function handleCancel() {
+    console.log(`cancel`);
+    setModify(false)
+  }
+
+  function changePrice(e) {
+    const val = e.target.value
+    const r = /^\d{0,}$/
+    if (r.test(val) || val === "") {
+      setChangedFood({
+        ...changedFood,
+        price: val,
+      })
+    } else {
+      setIsInteger(true)
+    }
+  }
+
   function getContent() {
     if (isModify) {
       return (
-        <div>
-          <div>
-            <span>名称: </span>
-            <input type="text" onChange={change} defaultValue={food.name} name="name"/>
-          </div>
-          <div>
-            <span>描述: </span>
-            <input type="text" onChange={change} defaultValue={food.desc} name="desc"/>
-          </div>
-          <div>
-            <span>价格: </span>
-            <input type="text" onChange={change} defaultValue={food.price} name="price"/>
-          </div>
-          <div>
-            <span>分类: </span>
-            <input type="text" onChange={change} defaultValue={food.category} name="category"/>
-          </div>
-          <div>
-            <span>图片: </span>
-            <input type="file" onChange={change}  name="img"/>
-          </div>
-        </div>
+        <Modal 
+          title="修改菜品"
+          visible={isModify}
+          onOk={save}
+          onCancel={handleCancel}
+        >
+          <Input addonBefore="名称" type="text" onChange={change} defaultValue={food.name} name="name"/>
+          <Input addonBefore="描述" type="text" onChange={change} defaultValue={food.desc} name="desc"/>
+          <Tooltip
+            trigger={['focus']}
+            visible={isInteger}
+            title="请输入整数"
+          >
+            <Input addonBefore="价格" type="text" onChange={changePrice}  value={changedFood.price} name="price" />
+          </Tooltip>
+          <Input addonBefore="分类" type="text" onChange={change} defaultValue={food.category} name="category"/>
+          <Input type="file" onChange={change}  name="img"/>
+        </Modal>
       )
     } else {
       return (
-        <div>
-          <div>
+        <div className="content">
+          <div className="img-box">
             <img src={`http://localhost:8888/upload/${food.img}`} alt={food.name}></img>
           </div>
           <div>
@@ -98,19 +115,20 @@ function FoodItem({foodData}) {
   }
 
   return (
-    <div className="food-item">
-      {getContent()}
-
-      <div className="control">
-        { isModify ? <button onClick={save}>保存菜品</button>
-                   : <button onClick={() => setModify(true)}>修改菜品</button>
-        }
-
-        {food.status === 'on' && <button onClick={ () => changeStatus(false)} >下架</button>}
-        {food.status === 'off' && <button onClick={ () => changeStatus(true)} >上架</button>}
+    <Card 
+      className="food-item"
+      actions = {[
+      <div>
+        <Button onClick={() => setModify(true)}>修改菜品</Button>
+        {food.status === 'on' && <Button onClick={ () => changeStatus(false)} >下架</Button>}
+        {food.status === 'off' && <Button onClick={ () => changeStatus(true)} >上架</Button>}
         
       </div>
-    </div>
+      ]}
+    >
+      {getContent()}
+
+    </Card>
   )
 }
 
@@ -131,8 +149,7 @@ function FoodManage() {
   console.log('foodManage');
   return (
     <div>
-      <h2>FoodManage</h2>
-      <Link to="add-food">添加菜品</Link>
+      
 
       <div>
         <Suspense fallback={<div>正在加载...</div>}>

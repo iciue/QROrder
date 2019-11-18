@@ -1,57 +1,96 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
+import {
+  Form,
+  Input,
+  Icon,
+  Upload,
+  Button,
+} from 'antd';
+
 import api from '../../../api';
 
 
-function AddFood () {
-  const inputFile = useRef()
-  const [food, setFood] = useState({})
-  
-  function change(e) {
-    const prop = e.target.name
-    const value = prop === 'img' ? e.target.files[0] :e.target.value
-    setFood({
-      ...food,
-      [prop]: value
-    })
+function AddFood ({form}) {
+  const { getFieldDecorator} = form
+
+  function submit(e) {
+    e.preventDefault();
+    form.validateFields((err, values) => {
+      if (err) {
+        console.log('Received values of form: ', values);
+      } else {
+        const fd = new FormData()
+        for (let key in values) {
+          const val = key === 'img' ? values[key][0].originFileObj : values[key]
+          fd.append(key, val)
+        }
+        api.post(`/restaurant/1/food`, fd)
+        .then(r => console.log(r.data))
+        .catch(console.log)
+      }
+    });
   }
 
-  function submit() {
-    const fd = new FormData()
-    for (let key in food) {
-      fd.append(key, food[key])
-    }
-    console.log(fd);
-    api.post(`/restaurant/1/food`, fd)
-    .then(r => console.log(r.data))
-    .catch(console.log)
-  }
+  const normFile = info => {
+    return info.fileList.length ? info.fileList.slice(-1) : info.fileList
+  };
   
   return (
-    <div>
-      
-      <div>
-        <span>名称: </span>
-        <input type="text" onChange={change}  name="name"/>
-      </div>
-      <div>
-        <span>描述: </span>
-        <input type="text" onChange={change}  name="desc"/>
-      </div>
-      <div>
-        <span>价格: </span>
-        <input type="number" onChange={change}  name="price"/>
-      </div>
-      <div>
-        <span>分类: </span>
-        <input type="text" onChange={change}  name="category"/>
-      </div>
-      <div>
-        <span>图片: </span>
-        <input type="file" onChange={change}  name="img" ref={inputFile} />
-      </div>
-      <button onClick={submit} >提交</button>
-    </div>
+    <Form onSubmit={submit}>
+      <Form.Item label="菜品名称" >
+          {getFieldDecorator('name', {
+            rules: [{ required: true, message: '请输入菜名!' }],
+          })(
+            <Input />,
+          )}
+      </Form.Item>
+      <Form.Item label="菜品描述">
+          {getFieldDecorator('desc', {
+            rules: [{ required:  false, message: '请输入菜品描述!' }],
+          })(
+            <Input />
+          )}
+      </Form.Item>
+      <Form.Item label="价格">
+          {getFieldDecorator('price', {
+            rules: [{ 
+              required: true, 
+              type: "integer",
+              message: '请输入整数!',
+              transform(value) {
+                return Number(value);
+              }}],
+          })(
+            <Input type="number" />
+          )}
+      </Form.Item>
+      <Form.Item label="分类">
+          {getFieldDecorator('category', {
+            
+          })(
+            <Input />
+          )}
+      </Form.Item>      
+      <Form.Item label="菜品图片" extra="点击上传菜品图片">
+          {getFieldDecorator('img', {
+            valuePropName: 'fileList',
+            getValueFromEvent: normFile,
+          })(
+            <Upload name="logo" beforeUpload={() => false}  listType="picture"  >
+              <Button>
+                <Icon type="upload" /> Click to upload
+              </Button>
+            </Upload>,
+          )}
+        </Form.Item>
+
+      <Form.Item>
+        <Button type="primary" htmlType="submit" >
+          添加菜品
+        </Button>
+      </Form.Item>
+    </Form>
   )
 }
 
-export default AddFood
+export default Form.create({})(AddFood)

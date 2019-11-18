@@ -1,0 +1,6 @@
+.manage {
+  height: 100%;
+}
+.manage .main .aside {
+  flex-basis: 25%;
+}

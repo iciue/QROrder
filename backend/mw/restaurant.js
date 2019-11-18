@@ -41,11 +41,13 @@ io.desk.on('connection', socket => {
         cartStatus.splice(idx, 1)
       } else {
         cartStatus[idx].amount = info.amount
+        cartStatus[idx].totalPrice = info.amount * info.food.price
       }
     } else {
       cartStatus.push({
         food: info.food,
         amount: info.amount,
+        totalPrice : info.amount * info.food.price
       })
     }
 
@@ -62,7 +64,7 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname))
   }
 })
-const uploader = multer({storage})
+const upload = multer({storage})
 
 
 const deskStatus = {
@@ -133,7 +135,7 @@ app.route('/restaurant/:rid/food')
     res.json(foodList)
   })
   // 添加菜品
-  .post(uploader.single('img'))
+  .post(upload.single('img'))
   .post(async (req, res, next) => {
     const uid = req.cookies.uid 
     const {name, desc, price, category, status} = req.body
@@ -162,7 +164,7 @@ app.route('/restaurant/:rid/food/:fid')
     
   })
   // 修改菜品
-  .put(uploader.single('img'))
+  .put(upload.single('img'))
   .put(async (req, res, next) => {
     const {fid} = req.params
     const uid = req.cookies.uid

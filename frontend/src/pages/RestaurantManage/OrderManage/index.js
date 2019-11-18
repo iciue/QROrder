@@ -2,9 +2,12 @@ import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {useLocation} from 'react-router-dom'
 import io from 'socket.io-client'
 
+
 import Loading from '../../../component/Loading'
 
 import api from '../../../api'
+
+import { Card, Button,} from 'antd';
 
 /**
  * 1. 获取所有订单数据
@@ -26,35 +29,35 @@ const OrderItem = React.memo(({order, onChangeStatus}) => {
   }
   
   return (
-    <div>
-      <h3>{order.deskName}</h3>
+    <Card 
+
+      title = {`桌号: ${order.deskName}`}
+      actions = {[
+        <Button onClick={print} >打印</Button>,
+        <Button onClick={changeStatus} data-status="confirmed" >确认</Button>,
+        <Button onClick={changeStatus} data-status="completed" >完成</Button>,
+      ]}
+    >
       <div>就餐人数: {order.customCount}</div>
       <div>总价格: {order.totalPrice}</div>
       <div>下单时间: { new Date(order.timestamp).toLocaleString()}</div>
       <div>订单状态: {order.status}</div>
 
-      <div>
-        <button onClick={print} >打印</button>
-        <button onClick={changeStatus} data-status="confirmed" >确认</button>
-        <button onClick={changeStatus} data-status="completed" >完成</button>
-      </div>
-    </div>
+    </Card>
   )
 }, (prev, next) => prev.order === next.order)
 
 const OrderList = ({orders, onChangeStatus}) => {
 
-  const filteredOrders = useMemo( () => {
-    const filteredOrders = orders.sort((a, b) =>  - new Date(b.timestamp) - new Date(a.timestamp))
-    console.log(filteredOrders);
-    return filteredOrders
-  }, [orders.length])
+  // const filteredOrders = useMemo( () => {
+  //   const filteredOrders = orders
+  //   console.log(filteredOrders);
+  //   return filteredOrders
+  // }, [orders.length])
 
   return (
     <div>
-      <ul>
-        {filteredOrders.map(order => <OrderItem order={order} key={order.id} onChangeStatus={onChangeStatus} />)}
-      </ul>
+        {orders.map(order => <OrderItem order={order} key={order.id} onChangeStatus={onChangeStatus} />)}
     </div>
   )
   
@@ -64,12 +67,14 @@ const OrderManage = () => {
   const [loading, setLoading] = useState(true)
   const [orders, setOrders] = useState()
   const rid = useLocation().state
+  console.log(`rid:`, rid);
   
   useEffect(() => {
     console.log(`请求数据, 绑定 socket`);
     api.get('/restaurant/1/order/')
       .then(res => {
-        setOrders(res.data)
+        const orders = res.data.sort((a, b) =>  - new Date(b.timestamp) - new Date(a.timestamp))
+        setOrders(orders)
         setLoading(false)
       })
     const socket = io('http://localhost:8888', {

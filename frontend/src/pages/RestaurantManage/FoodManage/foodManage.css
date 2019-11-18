@@ -1,13 +1,12 @@
-.food-item {
+.food-item > div {
+  padding: 0px;
+}
+.food-item .content {
   display: flex;
-  flex-wrap: wrap;
-  border: 2px solid;
 }
-
-.food-item img {
-  height: 120px;
+.food-item .content .img-box {
+  flex-basis: 50%;
 }
-
-.food-item .control {
-  flex-basis: 100%;
+.food-item .content .img-box img {
+  width: 100%;
 }

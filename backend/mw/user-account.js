@@ -38,7 +38,8 @@ app.post('/login', async(req, res, next) => {
   const {name, password} = req.body
   const user = await db.tryLogin({name, password: md5(md5(password))})
   if (user) {
-    res.cookie('uid', user.id, {httpOnly: true, signed: true})
+    // res.cookie('uid', user.id, {httpOnly: true, signed: true})
+    res.cookie('uid', user.id)
     res.json({
       name,
       title: user.title,
@@ -53,7 +54,7 @@ app.post('/login', async(req, res, next) => {
 
 // 根据 cookie 查找用户信息
 app.get('/userinfo', async (req, res, next) => {
-  const uid = req.cookies.uid || -1
+  const uid = req.cookies.uid 
   const user = await db.findUserById(uid)
   if(user) {
     res.json(user)

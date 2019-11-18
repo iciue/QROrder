@@ -1,0 +1,185 @@
+.container {
+  flex-wrap: wrap;
+  padding: 2px;
+  padding-bottom: 35px;
+  flex-direction: row;
+  font-size: 18px;
+  height: 100%;
+}
+.container .aside {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  width: 25%;
+}
+.container .aside .ant-menu-item-active {
+  color: initial;
+}
+.container .aside .ant-menu-item-selected {
+  color: #1890ff;
+}
+.container .menu-wrap {
+  flex: 1;
+  padding-left: 25%;
+  font-size: 18px;
+  height: 100%;
+}
+.container .menu-wrap > div {
+  height: 100%;
+  overflow-y: auto;
+}
+.container .menu-wrap .title {
+  color: lightgray;
+  margin: 0;
+  font-style: italic;
+  font-size: 0.8em;
+}
+.container .menu-wrap .food-card {
+  margin: 0px 5px 8px 5px;
+}
+.container .menu-wrap .food-card > div {
+  display: flex;
+  padding: 8px;
+  min-height: 130px;
+}
+.container .menu-wrap .food-card > div .img-box {
+  flex-basis: 40%;
+}
+.container .menu-wrap .food-card > div .img-box img {
+  width: 100%;
+}
+.container .menu-wrap .food-card > div .details {
+  flex: 1;
+  position: relative;
+}
+.container .menu-wrap .food-card > div .details .desc {
+  min-height: 1em;
+}
+.container .menu-wrap .food-card > div .details .wrap {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.container .menu-wrap .food-card > div .details .price {
+  float: left;
+  margin-bottom: 0px;
+  font-size: 1.3em;
+  color: red;
+}
+.container .menu-wrap .food-card > div .details .control {
+  float: right;
+  font-size: 1.2em;
+}
+.container .menu-wrap .food-card > div .details .control button {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  background-color: #e3eff3;
+  border: 1px solid;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.container .menu-wrap .food-card > div .details .control .inc::after {
+  content: '+';
+  font-size: 1.5em;
+  position: absolute;
+  top: -10px;
+  right: 3px;
+}
+.container .menu-wrap .food-card > div .details .control .dec::after {
+  content: '-';
+  font-size: 1.5em;
+  position: absolute;
+  top: -10px;
+  right: 6px;
+}
+.container .cart-wrap {
+  position: fixed;
+  padding: 0px;
+  bottom: 0px;
+  height: 35px;
+  width: 100%;
+  background-color: white;
+}
+.container .cart-wrap .cart-status {
+  border-radius: 50px;
+  background-color: #ffc53d8f;
+  width: 90%;
+  font-size: 18px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  padding: 0px 15px 0px 10px;
+}
+.container .cart-wrap .cart-status i {
+  font-size: 1.2em;
+}
+.container .cart-wrap .cart-status button {
+  font-weight: bolder;
+  border-radius: 30%;
+  background-color: #ffba5a;
+  margin-left: 20px;
+  padding: 0px 11px;
+}
+.container .cart-wrap .cart-model {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #00152994;
+  z-index: -1;
+  transition: all 1s;
+}
+.container .cart-wrap .cart-model .cart-details {
+  background-color: #f7f9ff;
+  position: fixed;
+  bottom: 1px;
+  min-height: 50px;
+  width: 100%;
+  padding: 30px;
+  transition: all 1s;
+}
+.container .cart-wrap .cart-model .cart-details li {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  font-size: 1.4em;
+}
+.container .cart-wrap .cart-model .cart-details li .name {
+  margin-right: 5px;
+}
+.container .cart-wrap .cart-model .cart-details li div .price {
+  color: red;
+  margin-right: 8px;
+}
+.container .cart-wrap .cart-model .cart-details li div span {
+  display: inline-block;
+  min-width: 2em;
+  text-align: center;
+}
+.container .cart-wrap .cart-model .cart-details li div button {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  background-color: #e3eff3;
+  border: 1px solid;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.container .cart-wrap .cart-model .cart-details li div .inc::after {
+  content: '+';
+  font-size: 1.4em;
+  position: absolute;
+  top: -12px;
+  right: 3px;
+}
+.container .cart-wrap .cart-model .cart-details li div .dec::after {
+  content: '-';
+  font-size: 1.4em;
+  position: absolute;
+  top: -12px;
+  right: 5px;
+}
