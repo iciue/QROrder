@@ -2,6 +2,8 @@ const path = require('path')
 const express = require('express')
 const db = require('../db/db-restaurant')
 const multer  = require('multer')
+const sharp = require('sharp')
+const fs = require('fs')
 const io  = require('../io-server')
 
 const app = express.Router()
@@ -130,18 +132,31 @@ app.post('/restaurant/:rid/desk/:did/order', async (req, res, next) => {
 app.route('/restaurant/:rid/food')
   // 获取所有菜品列表用于展示
   .get(async (req, res, next) => {
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const foodList = await db.getAllFood(uid)
     res.json(foodList)
   })
   // 添加菜品
   .post(upload.single('img'))
   .post(async (req, res, next) => {
-    const uid = req.cookies.uid 
+    let img = 'default.png'
+    if (req.file) {
+      console.log('上传了图片');
+      const image = req.file.filename
+      await sharp(path.resolve(req.file.destination, image))
+      .resize(300, 300)
+      .toFile(path.resolve(req.file.destination, `resized${image}`))
+      .catch(console.log)
+      fs.unlinkSync(path.resolve(req.file.destination, image))
+      img = `resized${image}`
+    }
+    
+    const uid = req.signedCookies.uid 
     const {name, desc, price, category, status} = req.body
-    const img = req.file && req.file.filename
+    console.log({uid, name, desc, price, category, status, img});
     await db.createFood({uid, name, desc, price, category, status, img})
     const food = await db.findNewestFood(uid)
+    console.log(food);
     return res.json(food)
   })
 
@@ -149,7 +164,7 @@ app.route('/restaurant/:rid/food/:fid')
   // 删除菜品
   .delete(async (req, res, next) => {
     const {fid} = req.params
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const food = await db.findFoodById({fid, uid})
     if (food) {
       await db.deleteFood(fid, uid)
@@ -166,13 +181,22 @@ app.route('/restaurant/:rid/food/:fid')
   // 修改菜品
   .put(upload.single('img'))
   .put(async (req, res, next) => {
+    let img = req.body.img || (req.file && req.file.filename)
+    if (req.file) {
+      await sharp(path.resolve(req.file.destination, img))
+      .resize(300, 300)
+      .toFile(path.resolve(req.file.destination, `resized${img}`))
+      .catch(console.log)
+      fs.unlinkSync(path.resolve(req.file.destination, img))
+      img = `resized${img}`
+    }
+    
     const {fid} = req.params
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const food = await db.findFoodById({fid, uid})
     if (food) {
       // TODO: 更新菜品图片后删除原图片, 如果是默认图片则不删除文件
       const {name, price, status, desc, category} = req.body
-      const img = req.body.img || (req.file && req.file.filename)
       await db.updateFood({name, price : +price, status, desc, category, fid, uid, img}) // 修改菜品的信息
       const updatedFood = await db.findFoodById({fid, uid})
       res.json(updatedFood)
@@ -189,14 +213,14 @@ app.route('/restaurant/:rid/food/:fid')
 app.route('/restaurant/:rid/desk')
   // 获取所有桌面列表
   .get(async (req, res, next) => {
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const deskList = await db.getAllDesk(uid)
     res.json(deskList)
   })
   // 添加桌面
   .post(async (req, res, next) => {
     const {name, capacity} = req.body
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     dn.createDesk({uid, name, capacity})
     const desk = await db.findNewestDesk(uid)
     res.json(desk)
@@ -207,7 +231,7 @@ app.route('/restaurant/:rid/desk/:did')
   // 删除桌面
   .delete(async (req, res, next) => {
     const {did} = req.params
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const desk = await db.findDeskById({did, uid})
     if (desk) {
       await db.deleteDesk({uid, did})
@@ -224,7 +248,7 @@ app.route('/restaurant/:rid/desk/:did')
   // 修改桌面
   .put(async (req, res, next) => {
     const {did} = req.params
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const desk = await db.findDeskById({did, uid})
     if (desk) {
       const {name, capacity} = req.body
@@ -245,14 +269,14 @@ app.route('/restaurant/:rid/desk/:did')
 app.route('/restaurant/:rid/order')
   // 获取所有订单
   .get(async (req, res, next) => {
-    const uid = req.cookies.uid
+    const uid = req.signedCookies.uid
     const orders = await db.getAllOrder(uid)
     res.json(orders)
   })
 
 app.put('/restaurant/:rid/order/:oid/status', async (req, res, next) => {
   const {status} = req.body
-  const uid = req.cookies.uid
+  const uid = req.signedCookies.uid
   const {oid} = req.params
   try {
     await db.updateOrder({status, oid, uid})
