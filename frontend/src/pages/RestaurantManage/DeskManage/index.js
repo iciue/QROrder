@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useReducer, useContext, useRef, useMemo, useCallback} from 'react';
+import React, {useState, useEffect, useReducer, useContext, useCallback} from 'react';
 import {useLocation} from 'react-router-dom'
-import api from '../../../api';
-import Loading from '../../../component/Loading';
+import api from 'api';
+import Loading from 'component/Loading';
 
 import {Input, Card, Button} from 'antd'
 const {Search} = Input
@@ -39,7 +39,6 @@ const deskReducer = (state, action) => {
   }
 }
 
-
 const DeskItem = ({desk}) => {
   const [isModify, setIsModify] = useState(false)
   const [changedDesk, setChangedDesk] = useState({...desk})
@@ -53,7 +52,6 @@ const DeskItem = ({desk}) => {
   })
   
   const save = () => {
-    console.log(changedDesk);
     api.put(`/restaurant/${rid}/desk/${desk.id}`, changedDesk)
       .then(res => {
         dispatch({
@@ -138,7 +136,7 @@ const DeskManage = () => {
       .then(res => {
         dispatch({type: 'getDeskInfo', data: res.data})
         // dispatch({type: 'setLoading'})
-        setTimeout(() => dispatch({type: 'setLoading'}) , 1000);
+        setTimeout(() => dispatch({type: 'setLoading'}) , 300);
       }) 
     return () => {}
   }, [])

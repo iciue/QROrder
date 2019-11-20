@@ -1,7 +1,7 @@
 import React, {Suspense, useState} from 'react';
-import createFetcher from '../../../utils/createFetcher';
-import api from '../../../api';
-import { isEqual } from '../../../utils/helper'
+import createFetcher from 'utils/createFetcher';
+import api from 'api';
+import { isEqual } from 'utils/helper'
 import './foodManage.less'
 import { Modal, Card, Button, Input, Tooltip  } from 'antd';
 
@@ -30,7 +30,9 @@ function FoodItem({foodData}) {
   }
 
   function change(e) {
-    const foodProp = e.target.name
+    let foodProp = e.target.name
+    console.log(foodProp);
+    (typeof foodProp === 'string') && (foodProp = foodProp.trim())
     const newVal = foodProp === 'img' ? e.target.files[0] : e.target.value
     setChangedFood({
       ...changedFood,
@@ -40,7 +42,7 @@ function FoodItem({foodData}) {
   
   function save() {
     // save 时对比 修改后的菜品信息是否和原来的一样
-    if (isEqual(changedFood, food)) {
+    if (isEqual(food, changedFood)) {
       console.log('未修改')
       setModify(false)
     } else {
@@ -101,9 +103,9 @@ function FoodItem({foodData}) {
       return (
         <div className="content">
           <div className="img-box">
-            <img src={`http://localhost:8888/upload/${food.img}`} alt={food.name}></img>
+            <img src={`/upload/${food.img}`} alt={food.name}></img>
           </div>
-          <div>
+          <div className="info-box">
             <p>名称: {food.name}</p>
             <p>描述: {food.desc}</p>
             <p>价格: {food.price}</p>
@@ -137,11 +139,11 @@ function FoodList() {
   const foods = fetcher.read().data
 
   return (
-    <div>
+    <>
       {
         foods.map((food, idx) => <FoodItem key={idx} foodData={food} /> )
       }
-    </div>
+    </>
   )
 }
 
@@ -149,13 +151,9 @@ function FoodManage() {
   console.log('foodManage');
   return (
     <div>
-      
-
-      <div>
-        <Suspense fallback={<div>正在加载...</div>}>
-          <FoodList></FoodList>
-        </Suspense>
-      </div>
+      <Suspense fallback={<div>正在加载...</div>}>
+        <FoodList></FoodList>
+      </Suspense>
     </div>
   )
 }

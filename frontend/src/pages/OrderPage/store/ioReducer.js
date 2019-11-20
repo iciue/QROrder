@@ -7,7 +7,7 @@ const initialState = {
 function ioReducer(state = initialState, action) {
   switch (action.type) {
     case 'createSocket':
-      const socket = io('localhost:8888', {
+      const socket = io({
         path: '/desk',
         query: {
           desk: action.did

@@ -34,10 +34,15 @@ function RestaurantManage() {
       .then(res => {
         console.log('get userinfo');
         setInfo(res.data)
-        setLoading(false)
       })
     return () => {}
   }, [])  
+
+  useEffect(() => {
+    info && setLoading(false)
+  }, [info])
+
+  console.log(path, url);
   
   return (
     <Layout className="manage" >
@@ -47,13 +52,13 @@ function RestaurantManage() {
             <RestaurantInfo info={info} />
           </Loading>
         </Header>
-        <Layout className="main" hasSider inlineIndent={12} mode="inline">
-        <Sider theme="light" className="aside" width="33%" >
+        <Layout className="main" hasSider mode="inline">
+          <Sider theme="light" className="aside" width="25%">
             <Affix>
               <Menu 
                 mode="inline"
-                defaultSelectedKeys={['2']}
-                defaultOpenKeys={['sub1']}
+                // defaultSelectedKeys={['2']}
+                // defaultOpenKeys={['sub1']}
               >
                 <Menu.Item key="1">
                   <Link to={{pathname: `${url}/order`, state: 1}} >订单管理</Link>  
@@ -61,10 +66,10 @@ function RestaurantManage() {
 
                 <SubMenu key='sub1' title={"菜品管理"} inlineIndent={12} >
                   <Menu.Item key="2">
-                    <Link to={`${url}/food`} >菜品管理</Link>
+                    <Link to={`${url}/food`} >修改菜品</Link>
                   </Menu.Item>
                   <Menu.Item key="3"> 
-                    <Link to="add-food">添加菜品</Link> 
+                    <Link to={{pathname: `${url}/add-food`, state: info}}>添加菜品</Link> 
                   </Menu.Item>
                 </SubMenu>
 

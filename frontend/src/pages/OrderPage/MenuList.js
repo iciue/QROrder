@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useMemo, useState }  from 'react';
+import React, { useCallback, useEffect, useRef, useState }  from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import {useParams } from 'react-router-dom';
 import {groupBy} from 'utils/helper';
@@ -9,6 +9,7 @@ const MenuList = () => {
   console.log(`list refresh`);
   const menu = useSelector(state => state.cartReducer.menu )
   const categories = groupBy(menu, 'category')
+  console.log(menu, categories);
   const categoriesNames = Object.keys(categories)
   const MenuRef = useRef()
   const isLock = useRef(false)
@@ -23,7 +24,8 @@ const MenuList = () => {
     }
     const pageY = MenuRef.current.scrollTop + 10
     const target = categoryInfo.find(it => pageY >= it.offsetTop)
-    target && target.dataset.category === selectedKeys || setSelectedKeys(target.dataset.category)
+    if (!target) return;
+    target.dataset.category === selectedKeys || setSelectedKeys(target.dataset.category)
   }, [categoryInfo])
 
   const scrollTo = (e) => {
@@ -35,13 +37,11 @@ const MenuList = () => {
   }
   
   useEffect(() => {
-    console.log(`didMount`);
     setCategoryInfo(() => categoriesNames.map(name => document.querySelector(`[data-category="${name}"]`)).reverse())
     return () => {console.log(`unMount`);}
   }, [])
 
   useEffect(() => {
-    console.log(`重新绑定了事件`);
     MenuRef.current.addEventListener('scroll', scrollHandler)
     return () => {
       MenuRef.current.removeEventListener('scroll', scrollHandler)
@@ -63,7 +63,7 @@ const MenuList = () => {
         {
           categoriesNames.map((name, i) => (
             <div key={name} className = {name} data-category={name} >
-              <h4 className="title">{name}</h4>
+              <h4 className="title">{name === '1' ? "" : name}</h4>
               {categories[name].map(food => <MenuItem key={food.id} food={food}/>)}
             </div>
           ))
@@ -101,7 +101,7 @@ const MenuItem = ({food}) => {
       hoverable
     >
       <div className="img-box">
-        <img src={`http://localhost:8888/upload/${food.img}`} alt={food.name}></img>
+        <img src={`/upload/${food.img}`} alt={food.name}></img>
       </div>
 
       <div className="details">
@@ -112,7 +112,7 @@ const MenuItem = ({food}) => {
           <span className="price"><Icon type="money-collect" /> {food.price}</span>
           <div className="control">
             {
-              count !== 0 && 
+              (count !== 0) && 
               <>
                 <button className="dec" onClick={() => foodCounter(-1)}></button> 
                 <span> {count} </span>

@@ -6,6 +6,85 @@
   font-size: 18px;
   height: 100%;
 
+
+  .signboard {
+    width: 50vw;
+    height: 50vw;
+    position: relative;
+    animation: swing 1.5s ease-in-out infinite alternate;
+    transform-origin: 50% 0px;
+    transform: translate(50%, -50%);
+    top: 50%;
+    margin: 0 auto;
+    margin-top: -50%;
+    text-align: center;
+
+    .sign {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      font-size: 2em;
+      background-color: burlywood;
+      border-radius: 15px;
+      color: saddlebrown;
+      font-family: sans-serif;
+      font-weight: 300;
+      text-align: center;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.3), 0 -2px 0 rgba(0, 0, 0, 0.7);
+    }
+
+
+    .strings {
+      width: 70%;
+      height: 70%;
+      border: 5px solid brown;
+      position: absolute;
+      border-right: none;
+      border-bottom: none;
+      transform: rotate(45deg);
+      transform-origin: 0px 0px;
+      left: 50%;
+    }
+
+    .pin {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .pin.top {
+      background-color: brown;
+      left: 50%;
+      transform: translate(-50%, 0px);
+    }
+
+    .pin.left,
+    .pin.right {
+      background-color: brown;
+      top: 46%;
+      box-shadow: 0 2px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .pin.left {
+      left: 0px;
+    }
+
+    .pin.right {
+      right: 0px;
+    }
+
+    @keyframes swing {
+      from {
+        transform: rotate(10deg);
+      }
+
+      to {
+        transform: rotate(-10deg);
+      }
+    }
+  }
+
   .aside {
     position: fixed;
     top: 0;
@@ -28,7 +107,7 @@
     font-size: 18px;
     height: 100%;
 
-    & > div {
+    &>div {
       height: 100%;
       overflow-y: auto;
     }
@@ -44,21 +123,23 @@
       margin: 0px 5px 8px 5px;
     }
 
-    .food-card > div{
+    .food-card>div {
       display: flex;
       padding: 8px;
       min-height: 130px;
 
       .img-box {
         flex-basis: 40%;
+
         img {
           width: 100%;
         }
       }
+
       .details {
         flex: 1;
         position: relative;
-        
+
         .desc {
           min-height: 1em;
         }
@@ -132,7 +213,7 @@
       i {
         font-size: 1.2em;
       }
-  
+
       button {
         font-weight: bolder;
         border-radius: 30%;
@@ -141,7 +222,7 @@
         padding: 0px 11px;
       }
     }
-  
+
     .cart-model {
       position: fixed;
       top: 0;
@@ -151,7 +232,7 @@
       background-color: #00152994;
       z-index: -1;
       transition: all 1s;
-  
+
       .cart-details {
         background-color: #f7f9ff;
         position: fixed;
@@ -160,17 +241,17 @@
         width: 100%;
         padding: 30px;
         transition: all 1s;
-  
+
         li {
           display: flex;
           flex-wrap: nowrap;
           justify-content: space-between;
           font-size: 1.4em;
-  
+
           .name {
             margin-right: 5px;
           }
-  
+
           div {
 
             .price {
@@ -193,7 +274,7 @@
               border-radius: 50%;
               vertical-align: middle;
             }
-  
+
             .inc::after {
               content: '+';
               font-size: 1.4em;
@@ -201,7 +282,7 @@
               top: -12px;
               right: 3px;
             }
-  
+
             .dec::after {
               content: '-';
               font-size: 1.4em;
@@ -211,11 +292,9 @@
             }
           }
         }
-  
+
       }
     }
   }
 
 }
-
-

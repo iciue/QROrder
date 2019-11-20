@@ -4,7 +4,7 @@ import {useParams, useLocation} from 'react-router-dom'
 
 import api from '../../api/index'
 
-import {Layout, Card, Icon, List} from 'antd'
+import {Layout, Icon, List} from 'antd'
 
 const CartDetails = ({setShowCart}) => {
   const cartStatus = useSelector(state => state.cartReducer.cartStatus)

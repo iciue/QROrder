@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {} from 'react';
+import {useLocation} from 'react-router-dom'
 import {
   Form,
   Input,
@@ -7,11 +8,11 @@ import {
   Button,
 } from 'antd';
 
-import api from '../../../api';
-
+import api from 'api';
 
 function AddFood ({form}) {
   const { getFieldDecorator} = form
+  const {rid} = useLocation().state.id
 
   function submit(e) {
     e.preventDefault();
@@ -20,12 +21,19 @@ function AddFood ({form}) {
         console.log('Received values of form: ', values);
       } else {
         const fd = new FormData()
+        console.log(values);
         for (let key in values) {
-          const val = key === 'img' ? values[key][0].originFileObj : values[key]
+          let val;
+          if (key === 'img' )  val = values[key] && values[key][0].originFileObj
+          else val = values[key]
+          (typeof val === 'string') && (val = val.trim())
           fd.append(key, val)
         }
-        api.post(`/restaurant/1/food`, fd)
-        .then(r => console.log(r.data))
+        api.post(`/restaurant/${rid}/food`, fd)
+        .then(r => {
+          console.log('ok');
+          console.log(r.data)
+        })
         .catch(console.log)
       }
     });

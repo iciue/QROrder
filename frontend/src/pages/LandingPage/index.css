@@ -23,7 +23,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background-image: url("http://localhost:8888/upload/carousel-1.jpg");
+  background-image: url("/upload/carousel-1.jpg");
   background-size: cover;
   filter: blur(10px);
   padding: 50px auto;

@@ -1,7 +1,7 @@
-import React, {useState, Suspense, useMemo, useCallback, useEffect} from 'react'
+import React, {useState, Suspense, useCallback} from 'react'
 import {Link} from 'react-router-dom'
 import createFetcher from '../../utils/createFetcher'
-import api from './../../api/index'
+import api from 'api/index'
 import './index.less'
 
 import {Layout, Radio, Carousel} from 'antd'
@@ -20,25 +20,19 @@ function DeskInfo() {
         onClick={ () => setCustom(i+1)}> {i + 1}人</Radio.Button>)
     }
     return arr
-  })
-
-  useEffect(() => {
-    console.log(1);
-    debugger
-    return () => {}
-  })
+  }, [])
   
   return (
     <Layout theme="light" className="landing">
-      <Carousel autoplay  className="carousel-box">
+      <Carousel autoplay className="carousel-box">
         <div>
-          <div style={{backgroundImage: 'url("http://localhost:8888/upload/carousel-1.jpg")'}} ></div>
+          <div style={{backgroundImage: `url(/upload/carousel-1.jpg)`}} ></div>
         </div>
         <div>
-          <div style={{backgroundImage: 'url("http://localhost:8888/upload/carousel-2.jpg")'}} ></div>
+          <div style={{backgroundImage: `url(/upload/carousel-2.jpg)`}} ></div>
         </div>
         <div>
-          <div style={{backgroundImage: 'url("http://localhost:8888/upload/carousel-3.jpg")'}} ></div>
+          <div style={{backgroundImage: `url(/upload/carousel-3.jpg)`}} ></div>
         </div>
       </Carousel>
       <Layout.Content className="content">

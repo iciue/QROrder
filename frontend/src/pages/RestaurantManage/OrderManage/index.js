@@ -1,11 +1,11 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useLocation} from 'react-router-dom'
 import io from 'socket.io-client'
 
 
-import Loading from '../../../component/Loading'
+import Loading from 'component/Loading'
 
-import api from '../../../api'
+import api from 'api'
 
 import { Card, Button,} from 'antd';
 
@@ -71,13 +71,13 @@ const OrderManage = () => {
   
   useEffect(() => {
     console.log(`请求数据, 绑定 socket`);
-    api.get('/restaurant/1/order/')
+    api.get(`/restaurant/${rid}/order/`)
       .then(res => {
         const orders = res.data.sort((a, b) =>  - new Date(b.timestamp) - new Date(a.timestamp))
         setOrders(orders)
         setLoading(false)
       })
-    const socket = io('http://localhost:8888', {
+    const socket = io({
       path: '/restaurant',
       query: {
         restaurant: rid

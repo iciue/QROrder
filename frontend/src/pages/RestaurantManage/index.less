@@ -1,14 +1,32 @@
 .manage {
   height: 100%;
 
-  header {
-
-  }
-
   .main {
-    
     .aside {
-      flex-basis: 25%;
+      flex: 0 0 25%; 
+      max-width: 25%;
+      min-width: 25%;
+      width: 25%;
+
+      ul {
+        div {
+          padding-left: 0px !important;
+        }
+
+        li {
+          padding-left: 10px !important;
+        }
+      }
+    }
+
+    .food-item {
+      margin-bottom: 8px;
+
+      ul {
+        li {
+          margin: 8px;
+        }
+      }
     }
   }
 }

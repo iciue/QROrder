@@ -1,0 +1,43 @@
+.login-wrap {
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 15px 20px;
+  position: fixed;
+  border-radius: 10px;
+  padding: 30px 20px 10px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: #e3eff3;
+}
+.login-wrap .login {
+  margin-bottom: 10px;
+}
+.login-wrap .login h3 {
+  position: absolute;
+  top: 0;
+  left: 5px;
+}
+.login-wrap .login button {
+  background-color: #51c4e9;
+  width: 100%;
+  border-radius: 16px;
+  font-size: 1.3em;
+  transition: all 0.5s ease 0s;
+}
+.login-wrap .login button:hover {
+  border-color: #b5b5b5;
+  box-shadow: rgba(51, 152, 219, 0.5) 0px 0px 15px 5px;
+}
+.login-wrap .login input {
+  position: relative;
+  font-size: 1.3em;
+  line-height: 0.8;
+  margin: 1.2rem 0px 0.4rem;
+  border-bottom: 1px solid #ffffff;
+  background-color: aliceblue;
+  transition: all 0.4s ease 0s;
+  outline: none;
+}
+.login-wrap .register {
+  margin-left: -12px;
+}

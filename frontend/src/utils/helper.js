@@ -7,7 +7,7 @@ export function isEqual(obj, other) {
   const objType = getTag(obj)
   const otherType = getTag(other)
   if (objType !== otherType) return false
-  if (isNaN(obj) && isNaN(other)) return true
+  if (Number.isNaN(obj) && Number.isNaN(other)) return true
 
   if (objType === 'Array') {
     return objType.length === other.length ? objType.every((v, i) => isEqual(v, other[i])) : false

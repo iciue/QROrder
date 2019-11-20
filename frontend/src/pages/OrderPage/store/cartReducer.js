@@ -2,6 +2,7 @@ const initialState = {
   menu: [],
   cartStatus: [],
   totalPrice: 0,
+  orderSuccess: false,
 }
 
 
@@ -48,7 +49,8 @@ function cartReducer(state = initialState, action) {
     case "placeOrderSuccess":
       return {
         ...state,
-        cartStatus: []
+        cartStatus: [],
+        orderSuccess: true,
       }
       
     default:
